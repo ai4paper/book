@@ -40,25 +40,45 @@ jobs:
           echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo '')" >> $GITHUB_ENV
           echo "CURRENT_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      # Prefer the hand-written `## X.Y.Z` block from CHANGELOG.md (everything up
+      # to the next `## `). If that section — or the file — is absent, fall back
+      # to notes auto-generated from the git log since the previous tag. Notes are
+      # written to a file and handed to the release step via `body_path`.
       - name: Generate release notes
         id: generate_notes
         shell: sh -e {0}
         run: |
-          if [ -n "$PREVIOUS_TAG" ]; then
-            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-            echo "## Changes since $PREVIOUS_TAG" >> $GITHUB_ENV
-            echo "" >> $GITHUB_ENV
-            git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" $PREVIOUS_TAG..$CURRENT_TAG >> $GITHUB_ENV
-            echo "" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-            echo "## Initial Release" >> $GITHUB_ENV
-            echo "" >> $GITHUB_ENV
-            git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" >> $GITHUB_ENV
-            echo "" >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
+          VERSION="${CURRENT_TAG#v}"
+          NOTES="$RUNNER_TEMP/notes.md"
+          : > "$NOTES"
+
+          if [ -f CHANGELOG.md ]; then
+            awk -v hdr="## ${VERSION}" '
+              $0 == hdr { found = 1; next }
+              found && /^## / { exit }
+              found { print }
+            ' CHANGELOG.md > "$NOTES"
+            # strip leading blank lines
+            sed -i -e '/./,$!d' "$NOTES"
           fi
+
+          if grep -q '[^[:space:]]' "$NOTES"; then
+            echo "Using CHANGELOG.md '## ${VERSION}' section for release notes."
+          else
+            echo "::warning::No '## ${VERSION}' section in CHANGELOG.md — generating notes from git log."
+            if [ -n "$PREVIOUS_TAG" ]; then
+              echo "## Changes since $PREVIOUS_TAG" >> "$NOTES"
+              echo "" >> "$NOTES"
+              git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" "$PREVIOUS_TAG..$CURRENT_TAG" >> "$NOTES"
+            else
+              echo "## Initial Release" >> "$NOTES"
+              echo "" >> "$NOTES"
+              git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" >> "$NOTES"
+            fi
+            echo "" >> "$NOTES"
+          fi
+
+          echo "notes_file=$NOTES" >> "$GITHUB_OUTPUT"
 
       - name: Compile Typst document
         run: |
@@ -75,7 +95,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ env.CURRENT_TAG }}
-          body: ${{ env.RELEASE_NOTES }}
+          body_path: ${{ steps.generate_notes.outputs.notes_file }}
           draft: false
           prerelease: false
           files: |

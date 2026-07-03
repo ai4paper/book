@@ -53,13 +53,22 @@ The PDF is built by GitHub Actions, not committed. Pushing a version tag
 (e.g. `v1.0.0`) triggers `.github/workflows/release.yml`, which:
 
 1. Installs Source Han Serif and Typst
-2. Compiles `ai4paper.typ`
-3. Publishes a GitHub Release with the PDF attached as `ai4paper-v1.0.0.pdf`
+2. Compiles `ai4paper.typ` (this is the build gate — a broken source fails the run)
+3. Builds the release notes from the matching `## X.Y.Z` section of
+   [`CHANGELOG.md`](CHANGELOG.md), falling back to a `git log` summary if that
+   section is absent
+4. Publishes a GitHub Release with the PDF attached as `ai4paper-v1.0.0.pdf`
 
-To cut a release:
+The book carries no version string of its own: the git tag plus the top
+`## X.Y.Z` heading in `CHANGELOG.md` is the version-of-record. Cutting a release —
+choosing the bump, writing the changelog section, tagging and pushing — is
+scripted in [`prompt/release.md`](prompt/release.md). The short version:
 
 ```bash
-git tag v1.0.0
+# 1. add a `## X.Y.Z` section to CHANGELOG.md (see prompt/release.md)
+# 2. commit it, then:
+git tag -a v1.0.0 -m v1.0.0
+git push origin main
 git push origin v1.0.0
 ```
 
