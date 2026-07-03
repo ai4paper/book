@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "creating-figures": {
+      "source": "ai4paper/apaper-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/creating-figures/SKILL.md",
+      "computedHash": "755a23983907bf8e36ca8574dd525d331057c86a1a6de53866e48756f8d5746b"
+    },
+    "isomoes-writing": {
+      "source": "isomoes/skills",
+      "sourceType": "github",
+      "skillPath": "skills/isomoes-writing/SKILL.md",
+      "computedHash": "448d3deed21ef69ad2d7fe94a03de1f44a3fe13034586a6350ab51f4effe0d61"
+    }
+  }
+}

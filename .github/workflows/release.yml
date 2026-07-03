@@ -1,0 +1,85 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - "v*" # This workflow runs when any tag starting with 'v' is pushed
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # needed for softprops/action-gh-release to publish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so we can build release notes from commits
+
+      - name: Install Source Han Serif and Typst
+        run: |
+          # Download and install Source Han Serif (the CJK fallback font)
+          wget -q https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/09_SourceHanSerifSC.zip
+          unzip -q 09_SourceHanSerifSC.zip -d source-han-serif
+          sudo mkdir -p /usr/share/fonts/opentype/source-han-serif
+          sudo cp source-han-serif/OTF/SimplifiedChinese/*.otf /usr/share/fonts/opentype/source-han-serif/
+          sudo fc-cache -fv
+
+          # Verify font installation
+          fc-list | grep "Source Han Serif" || echo "Warning: Source Han Serif not found in font cache"
+
+          # Install Typst
+          curl -fsSL https://github.com/typst/typst/releases/latest/download/typst-x86_64-unknown-linux-musl.tar.xz | tar -xJ
+          sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/
+          typst --version
+
+      - name: Get previous tag
+        id: previoustag
+        run: |
+          echo "PREVIOUS_TAG=$(git describe --tags --abbrev=0 $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo '')" >> $GITHUB_ENV
+          echo "CURRENT_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Generate release notes
+        id: generate_notes
+        shell: sh -e {0}
+        run: |
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+            echo "## Changes since $PREVIOUS_TAG" >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" $PREVIOUS_TAG..$CURRENT_TAG >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+            echo "## Initial Release" >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            git log --pretty=format:"* %s (%an) [%h](https://github.com/${{ github.repository }}/commit/%H)" >> $GITHUB_ENV
+            echo "" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
+
+      - name: Compile Typst document
+        run: |
+          mkdir -p build
+          echo "Compiling ai4paper.typ"
+          typst compile --root . ai4paper.typ "build/ai4paper-${CURRENT_TAG}.pdf"
+
+      - name: List generated PDFs
+        run: |
+          echo "Generated PDFs in build:"
+          ls -la build || echo "No PDFs found in build"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ env.CURRENT_TAG }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+          files: |
+            build/*.pdf
+        env:
+          # Built-in token; works out of the box with `contents: write` above.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

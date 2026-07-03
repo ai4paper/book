@@ -1,0 +1,11 @@
+# Compiled output — the book PDF is built by CI on tag push
+# (see .github/workflows/release.yml), so it is not tracked.
+*.pdf
+
+# Keep the chapter-map figure: it is a build *input* imported by ai4paper.typ,
+# not a build output.
+!figures/chapter-map.pdf
+
+# Typst / editor cruft
+/build/
+.DS_Store
