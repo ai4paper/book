@@ -2,9 +2,13 @@
 # (see .github/workflows/release.yml), so it is not tracked.
 *.pdf
 
-# Keep the chapter-map figure: it is a build *input* imported by ai4paper.typ,
+# Keep the figure PDFs: they are build *inputs* imported by ai4paper.typ,
 # not a build output.
 !figures/chapter-map.pdf
+!figures/foundations-map.pdf
+!figures/research-definition.pdf
+!figures/llm-agent-mcp.pdf
+!figures/verification-cost.pdf
 
 # Typst / editor cruft
 /build/
