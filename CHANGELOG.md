@@ -10,6 +10,12 @@ The version-of-record for a release is this file's top `## X.Y.Z` heading plus t
 matching git tag; the book itself carries no version string (the title page shows the
 compile date, per the preface). While the book is pre-1.0 it stays in the `0.y` range.
 
+## 0.2.2
+
+- docs(experiments): fill experiments chapter (plan decomposition, parallel subagents, ikanban remote) (@isomoes) f6d780a
+- docs(find-problem): fill topic-finding chapter (apaper-mcp, two-step gap analysis) (@isomoes) 768de0a
+- docs(figures): add ch3-4 figures (gap pipeline, experiment workflow, ikanban remote) (@isomoes) ed9518b
+
 ## 0.2.1
 
 - docs(setup): fill environment setup chapter (model API, runtime, MCP) (@isomoes) e4f6fb1
