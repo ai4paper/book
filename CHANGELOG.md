@@ -10,6 +10,14 @@ The version-of-record for a release is this file's top `## X.Y.Z` heading plus t
 matching git tag; the book itself carries no version string (the title page shows the
 compile date, per the preface). While the book is pre-1.0 it stays in the `0.y` range.
 
+## 0.2.3
+
+- docs(setup): align ch2 reuse-layer forward promise with ch4-6 skill deliverables (@isomoes) 43aeee3
+- fix(typography): collapse spurious CJK line-break spaces book-wide via cjk-unbreak (@isomoes) fcf83cb
+- docs(writing): fill writing chapter (structure-first drafting, writing skill alignment, bib hygiene) (@isomoes) d925f13
+- docs(data-figures): fill data & figures chapter (reproducible data scripts, figure loop, creating-figures skill) (@isomoes) 9dd9908
+- docs(figures): add ch5-6 figures (figure loop, writing pipeline) (@isomoes) 7581ee3
+
 ## 0.2.2
 
 - docs(experiments): fill experiments chapter (plan decomposition, parallel subagents, ikanban remote) (@isomoes) f6d780a
