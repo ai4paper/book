@@ -19,11 +19,14 @@ jobs:
 
       - name: Install Source Han Serif and Typst
         run: |
-          # Download and install Source Han Serif (the CJK fallback font)
-          wget -q https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/09_SourceHanSerifSC.zip
-          unzip -q 09_SourceHanSerifSC.zip -d source-han-serif
+          # Download and install Source Han Serif (the CJK fallback font).
+          # Use the CN subset build: its OTFs carry the plain family name
+          # "Source Han Serif" that ai4paper.typ requests (the SC build is
+          # named "Source Han Serif SC", which Typst reports as unknown).
+          wget -q https://github.com/adobe-fonts/source-han-serif/releases/download/2.003R/14_SourceHanSerifCN.zip
+          unzip -q 14_SourceHanSerifCN.zip -d source-han-serif
           sudo mkdir -p /usr/share/fonts/opentype/source-han-serif
-          sudo cp source-han-serif/OTF/SimplifiedChinese/*.otf /usr/share/fonts/opentype/source-han-serif/
+          sudo cp source-han-serif/SubsetOTF/CN/*.otf /usr/share/fonts/opentype/source-han-serif/
           sudo fc-cache -fv
 
           # Verify font installation
