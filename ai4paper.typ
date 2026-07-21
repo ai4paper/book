@@ -75,6 +75,10 @@
 // Configure theorem environments with theorion
 #show: show-theorion
 
+// Collapse the spurious space a source line break leaves between CJK characters
+#import "@preview/cjk-unbreak:0.1.1": remove-cjk-break-space
+#show: remove-cjk-break-space
+
 // Style all links with blue color and underline
 #show link: it => {
   set text(fill: rgb("#1E90FF"))
