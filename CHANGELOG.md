@@ -12,6 +12,8 @@ compile date, per the preface). While the book is pre-1.0 it stays in the `0.y` 
 
 ## 0.2.3
 
+- fix(ci): install Source Han Serif CN build so Typst matches the font family (@isomoes) 60f4f5d
+- fix(figures): track ch5-6 figure PDFs as build inputs (@isomoes) 4548e4d
 - docs(setup): align ch2 reuse-layer forward promise with ch4-6 skill deliverables (@isomoes) 43aeee3
 - fix(typography): collapse spurious CJK line-break spaces book-wide via cjk-unbreak (@isomoes) fcf83cb
 - docs(writing): fill writing chapter (structure-first drafting, writing skill alignment, bib hygiene) (@isomoes) d925f13
