@@ -4,11 +4,7 @@
 
 # Keep the figure PDFs: they are build *inputs* imported by ai4paper.typ,
 # not a build output.
-!figures/chapter-map.pdf
-!figures/foundations-map.pdf
-!figures/research-definition.pdf
-!figures/llm-agent-mcp.pdf
-!figures/verification-cost.pdf
+!figures/*.pdf
 
 # Typst / editor cruft
 /build/
