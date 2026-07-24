@@ -223,6 +223,12 @@
   numbering: none,
 )
 
+#note-box(title: [配套课程录像])[
+  #link("https://www.bilibili.com/video/BV1dET16GEXY")[第 1、2 章]；
+  #link("https://www.bilibili.com/video/BV1tjN36fERj")[第 3、4 章]；
+  #link("https://www.bilibili.com/video/BV1SPg46DEGU")[第 5、6 章]。
+]
+
 关于排版：本书使用 _typst_ 排版引擎@typst2024documentation，
 可以很好地处理中英文混排；正文各章按主题拆分为独立文件，
 由主文件统一引用，方便维护，也方便让 LLM 分章处理。
